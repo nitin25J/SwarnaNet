@@ -1,106 +1,132 @@
-# SwarnaNet
+# SWARNANET
 
 ### MCX Commodity Derivatives Intelligence & Cross-Contract Relative Value Terminal
 
-**SwarnaNet** is a quantitative analytics platform designed to analyze Multi Commodity Exchange of India (MCX) gold contracts, evaluate cross-contract relative-value opportunities, and validate trading strategies using historical market data and backtesting.
+**Quantitative Analytics | Contract-Aware Pricing | Opportunity Validation | Cost-Aware Backtesting**
 
-Developed for **Hack in Hills '26 — Problem Statement 03**, SwarnaNet combines historical market-data processing, quantitative analysis, opportunity validation, and interactive financial dashboards in a unified terminal.
+**Hack in Hills '26 — Problem Statement 03**
 
-> **Project status:** Prototype and quantitative research platform. Trading signals and backtest results are research outputs, not guaranteed returns or investment advice.
+> A price difference is not an opportunity until the numbers survive the costs.
+
+SwarnaNet is a quantitative research and analytics platform designed to analyze historical MCX gold contracts, investigate cross-contract relative-value opportunities, and evaluate trading strategies through transaction-cost-aware backtesting.
+
+Rather than treating every pricing discrepancy as a trading opportunity, SwarnaNet focuses on contract-aware comparisons, structured data processing, quantitative validation, and transparent performance evaluation.
 
 ---
 
 ## Table of Contents
 
-* [Overview](#overview)
+* [The Problem](#the-problem)
+* [Our Approach](#our-approach)
 * [Key Features](#key-features)
 * [Supported Contracts](#supported-contracts)
-* [System Architecture](#system-architecture)
+* [How SwarnaNet Works](#how-swarnanet-works)
+* [Quantitative Engine](#quantitative-engine)
 * [Data Pipeline](#data-pipeline)
+* [Backtesting and Results](#backtesting-and-results)
 * [Technology Stack](#technology-stack)
+* [System Architecture](#system-architecture)
 * [Project Structure](#project-structure)
-* [Quantitative Validation](#quantitative-validation)
 * [Getting Started](#getting-started)
 * [Environment Configuration](#environment-configuration)
-* [Running the Application](#running-the-application)
-* [Testing and Verification](#testing-and-verification)
+* [Testing and Validation](#testing-and-validation)
 * [Data Refresh](#data-refresh)
 * [Deployment](#deployment)
-* [Security](#security)
+* [Security and Data Integrity](#security-and-data-integrity)
 * [Limitations](#limitations)
+* [Future Scope](#future-scope)
 * [Disclaimer](#disclaimer)
 
 ---
 
-## Overview
+## The Problem
 
-Gold contracts on MCX differ in contract size, purity, expiry, liquidity, and trading characteristics. Comparing them directly without normalization can produce misleading relative-value estimates.
+MCX gold contracts differ in contract size, purity, expiry, quotation conventions, and trading characteristics.
 
-SwarnaNet provides a structured analytical workflow to:
+These differences make cross-contract comparisons challenging.
 
-* Ingest and normalize historical MCX gold data.
-* Maintain contract-specific expiry information.
-* Generate quantitative features.
-* Evaluate cross-contract relative-value opportunities.
-* Backtest trading strategies while accounting for transaction costs.
-* Present analytical results through an interactive dashboard.
-* Store and retrieve supported application data through Supabase.
-* Refresh market data through a controlled pipeline.
+A price difference between two contracts does not automatically indicate mispricing. The apparent discrepancy may result from differences in contract specifications, expiry, market conditions, or the units used to quote prices.
 
-The system prioritizes **data integrity, quantitative transparency, reproducibility, and realistic transaction-cost analysis**.
+Even when a potential relative-value opportunity exists, transaction costs can eliminate its theoretical profitability.
+
+A reliable analytical system must therefore answer three questions:
+
+1. Are the contracts being compared on a consistent basis?
+2. Does the observed relationship support a meaningful relative-value hypothesis?
+3. Does the strategy remain viable after estimated transaction costs?
+
+SwarnaNet is designed to investigate these questions through a structured quantitative workflow.
+
+## Our Approach
+
+SwarnaNet connects historical market-data processing, contract-aware quantitative analysis, opportunity evaluation, and backtesting in one platform.
+
+The system is designed around four principles:
+
+* **Data integrity:** Normalize and validate market observations before using them in calculations.
+* **Quantitative rigor:** Evaluate candidate opportunities using the implemented analytical methodology.
+* **Cost awareness:** Distinguish gross performance from net performance after estimated trading costs.
+* **Transparency:** Preserve validation outputs and expose unfavorable results instead of presenting every signal as profitable.
+
+The objective is to support better-informed quantitative research, not to manufacture trading opportunities.
+
+---
 
 ## Key Features
 
-### 1. Historical Market Data
+### Historical Market Data Processing
 
-* Structured ingestion of MCX gold-contract CSV archives.
-* Canonical schema normalization.
-* Standardized trading and expiry dates.
-* Duplicate-record handling.
-* Data-quality checks and validation reports.
+* Ingest historical MCX gold-contract CSV files.
+* Normalize source columns into a canonical schema.
+* Parse trading dates and contract expiry dates.
+* Identify duplicate records.
+* Preserve row-level expiry information.
+* Generate structured datasets and validation reports.
 
-### 2. Quantitative Feature Engineering
+### Quantitative Feature Engineering
 
-* Contract-level historical feature generation.
-* Structured data preparation for cross-contract comparisons.
-* Reusable calculations to reduce unnecessary recomputation.
+* Generate contract-level quantitative features.
+* Prepare historical observations for cross-contract analysis.
+* Reuse structured calculations across downstream processing stages.
+* Maintain consistency between analytical outputs and their underlying data.
 
-### 3. Opportunity Validation
+### Cross-Contract Opportunity Validation
 
-* Cross-contract relative-value analysis.
-* Contract-aware comparisons.
-* Quantitative validation of candidate opportunities.
-* Evaluation of whether an apparent pricing difference remains meaningful after estimated trading costs.
+* Evaluate potential relative-value discrepancies.
+* Account for relevant contract characteristics.
+* Apply the quantitative criteria implemented in the engine.
+* Assess whether estimated trading costs undermine the apparent opportunity.
 
-### 4. Backtesting
+### Historical Backtesting
 
-* Historical strategy evaluation.
-* Trade and equity-curve records.
-* Performance metrics.
-* Transaction-cost-aware PnL calculations.
-* Separation of gross and net performance.
+* Evaluate strategies against historical observations.
+* Record trades and equity-curve data.
+* Calculate gross and net PnL.
+* Account for estimated transaction costs.
+* Report risk-adjusted performance metrics.
+* Evaluate out-of-sample performance where implemented.
 
-### 5. Interactive Dashboard
+### Interactive Analytics Dashboard
 
-* Market-data exploration.
-* Quantitative analytics and opportunity information.
-* Backtesting results.
-* Data-source and refresh-status visibility.
-* Judge-demo workflow.
+* Explore supported market data.
+* Review quantitative outputs.
+* Inspect opportunity-analysis results.
+* Examine backtesting metrics.
+* View supported data-source and refresh-status information.
 
-### 6. Supabase Integration
+### Supabase Integration
 
-* PostgreSQL-backed application data.
-* Supported API and database integration.
-* Configurable authentication and access controls where implemented.
+* Integrate supported application data with Supabase and PostgreSQL.
+* Persist configured analytical records.
+* Apply database access controls and Row Level Security where configured.
 
-### 7. Data Refresh Pipeline
+### Controlled Data Refresh
 
-* Controlled ingestion of new data.
-* Normalization and validation.
-* Feature and opportunity recalculation.
-* Database synchronization where configured.
-* Refresh-status and audit reporting.
+* Process incoming market data.
+* Normalize and validate new observations.
+* Recalculate dependent analytical outputs.
+* Synchronize supported records with the configured database.
+* Maintain refresh-status and audit information.
 
 ---
 
@@ -108,25 +134,37 @@ The system prioritizes **data integrity, quantitative transparency, reproducibil
 
 SwarnaNet's initial dataset covers four MCX gold-contract categories.
 
-| Contract   | Contract Size | Quoted/Reference Convention               |
-| ---------- | ------------: | ----------------------------------------- |
-| GOLDM      |     100 grams | Quoted per 10 grams                       |
-| GOLDTEN    |      10 grams | Contract-specific exchange specifications |
-| GOLDGUINEA |       8 grams | Contract-specific exchange specifications |
-| GOLDPETAL  |        1 gram | Contract-specific exchange specifications |
+| Contract   | Reference Contract Size | Analytical Considerations                                          |
+| ---------- | ----------------------: | ------------------------------------------------------------------ |
+| GOLDM      |               100 grams | Quoted per 10 grams; contract specifications must be accounted for |
+| GOLDTEN    |                10 grams | Contract-specific quotation, purity, and listing details           |
+| GOLDGUINEA |                 8 grams | Contract-specific specifications                                   |
+| GOLDPETAL  |                  1 gram | Contract-specific specifications                                   |
 
-**Important:** Contract specifications, purity, listing periods, expiry rules, and quotation conventions must be verified against official MCX specifications before using these values in live calculations. GOLDTEN's availability is date-dependent.
+Contract sizes and quotation conventions must be verified against the applicable official MCX specifications before being used in production calculations. Contract availability and expiry rules can vary by date.
 
-The quantitative engine must account for relevant differences in contract specifications before comparing prices.
+The quantitative engine must account for relevant differences in contract specifications rather than comparing raw prices without adjustment.
 
 ---
 
-## System Architecture
+## How SwarnaNet Works
 
-The application follows a data-processing and analytics workflow.
+The platform follows a structured analytical workflow.
+
+1. **Ingestion:** Read supported historical MCX market-data files.
+2. **Normalization:** Convert supported source fields into a consistent schema.
+3. **Validation:** Check records, identify duplicates, and generate audit outputs.
+4. **Feature engineering:** Generate quantitative features from the accepted observations.
+5. **Opportunity evaluation:** Analyze candidate cross-contract relationships.
+6. **Backtesting:** Evaluate the implemented strategy against historical data.
+7. **Cost analysis:** Compare gross results with estimated transaction costs and net performance.
+8. **Presentation:** Make supported analytical outputs available through the application.
+9. **Refresh:** Process updated data and recalculate dependent outputs through the configured refresh workflow.
+
+### Data Flow
 
 ```text
-MCX Historical Data
+Historical MCX Data
         |
         v
 Data Ingestion
@@ -141,43 +179,79 @@ Canonical Market Dataset
 Quantitative Feature Engineering
         |
         v
-Opportunity Validation
+Opportunity Evaluation
         |
         v
 Historical Backtesting
         |
         v
-Metrics and Analytical Outputs
+Transaction-Cost Analysis
         |
         v
-Backend API / Supabase
+Database and API Integration
         |
         v
-SwarnaNet Dashboard
+SwarnaNet Analytics Dashboard
 ```
 
-The exact implementation and execution order are determined by the current source code and configuration.
+The diagram represents the intended analytical flow. The exact execution sequence depends on the implemented pipeline and application configuration.
+
+---
+
+## Quantitative Engine
+
+The quantitative engine is responsible for transforming historical observations into structured analytical outputs.
+
+### Contract-Aware Price Comparison
+
+Contracts may differ in size, purity, quotation units, and expiry.
+
+Comparisons must account for the relevant differences before interpreting a price discrepancy as a potential relative-value opportunity.
+
+### Feature Engineering
+
+The pipeline generates structured features from historical market observations. These features support downstream analysis and are stored in the project's configured output locations.
+
+### Opportunity Evaluation
+
+The engine evaluates candidate opportunities according to its implemented quantitative criteria.
+
+A detected discrepancy is a hypothesis to investigate, not proof of mispricing or guaranteed profitability.
+
+### Statistical Analysis
+
+Where implemented, statistical methods can be used to investigate relationships between contract prices, including their stability and potential mean-reverting behavior.
+
+Statistical significance alone does not establish that a strategy is economically viable.
+
+### Transaction-Cost Analysis
+
+The engine distinguishes between gross strategy performance and net performance after estimated costs.
+
+This is essential because a small theoretical pricing difference can be overwhelmed by brokerage, exchange charges, taxes, slippage, and other execution-related expenses.
+
+> **A candidate signal becomes more credible only when its assumptions, data, and economic viability withstand validation.**
 
 ---
 
 ## Data Pipeline
 
-The ingestion pipeline processes source archives and produces normalized market data.
+The ingestion pipeline converts source CSV archives into a normalized dataset suitable for quantitative processing.
 
 ### Processing Stages
 
-1. Read source CSV files.
-2. Normalize supported column names.
+1. Read supported source CSV files.
+2. Map source headers into canonical fields.
 3. Parse trading dates and expiry dates.
-4. Validate required market-data fields.
+4. Validate the relevant source fields.
 5. Identify duplicate records.
-6. Preserve row-level contract expiry information.
-7. Sort accepted records consistently.
+6. Preserve the expiry date recorded in each row.
+7. Sort accepted observations consistently.
 8. Write normalized outputs and validation reports.
 
-### Canonical Schema
+### Canonical Dataset Schema
 
-The normalized dataset uses the following nine fields:
+The normalized dataset contains nine canonical fields.
 
 | Field          | Description                                                  |
 | -------------- | ------------------------------------------------------------ |
@@ -191,47 +265,112 @@ The normalized dataset uses the following nine fields:
 | `Volume`       | Normalized trading volume                                    |
 | `OpenInterest` | Open-interest value                                          |
 
-Source-column mappings and units should be checked against the actual source files and ingestion implementation.
+The implementation maps volume and open interest from their designated source fields. The units and source semantics must be preserved when processing new data.
 
-### Reported Initial Dataset
+### Reported Dataset Audit
 
-The project's previously reported ingestion audit recorded:
+The previously reported ingestion audit recorded the following results.
 
-| Metric                     | Reported Value |
+| Metric                     | Reported Count |
 | -------------------------- | -------------: |
 | Source CSV files           |             43 |
-| Source rows                |          3,603 |
+| Raw source rows            |          3,603 |
 | Accepted normalized rows   |          3,269 |
 | Duplicate rows removed     |            334 |
 | Quarantined malformed rows |              0 |
 
-These figures describe the reported ingestion run and should be revalidated if the source archives or pipeline change.
+These figures describe the reported audit and should be checked against the latest validation report if the source archives or processing logic change.
+
+### Data Integrity
+
+The pipeline preserves row-level expiry information rather than inferring expiry dates from filenames.
+
+Duplicate handling and data-quality validation are important because repeated or incorrectly interpreted observations can distort quantitative features and backtest results.
+
+The presence of an accepted record does not automatically mean that every field contains a valid market observation. Missing prices, zero-volume records, and settlement values outside observed daily ranges require appropriate interpretation according to source conventions.
+
+---
+
+## Backtesting and Results
+
+SwarnaNet evaluates the implemented strategy using historical market observations and estimated transaction costs.
+
+The following figures are from a previously reported backtest run. They are included to document the reported outcome, not as independently revalidated performance claims.
+
+### Reported Backtest Snapshot
+
+| Metric                      | Reported Result |
+| --------------------------- | --------------: |
+| Number of trades            |              42 |
+| Gross PnL                   |       ₹5,031.00 |
+| Estimated transaction costs |      ₹15,411.76 |
+| Net PnL                     |     -₹10,380.76 |
+| Net Sharpe ratio            |         -1.7888 |
+| Out-of-sample net PnL       |      -₹5,840.35 |
+| Out-of-sample Sharpe ratio  |         -3.5024 |
+
+### Interpretation
+
+The reported strategy generated positive gross PnL but incurred estimated transaction costs greater than its gross profit.
+
+Consequently, the reported net PnL was negative.
+
+The strategy was classified as **friction-constrained** because the estimated cost hurdle exceeded the observed gross edge.
+
+This result highlights an important distinction between identifying a price discrepancy and demonstrating an economically viable strategy.
+
+The results do not establish that the strategy is profitable. Further evaluation would require examining the strategy assumptions, signal quality, data limitations, transaction-cost estimates, and out-of-sample behavior.
+
+**Negative results are part of quantitative validation. They should not be hidden or reclassified to make a strategy appear successful.**
 
 ---
 
 ## Technology Stack
 
-| Technology          | Purpose                                          |
-| ------------------- | ------------------------------------------------ |
-| Python              | Data ingestion and quantitative processing       |
-| TypeScript          | Typed application development                    |
-| Next.js             | Web application and API routes                   |
-| React               | User interface                                   |
-| Supabase            | PostgreSQL and configured backend services       |
-| PostgreSQL          | Relational data storage                          |
-| pytest              | Python testing                                   |
-| ESLint              | JavaScript/TypeScript linting                    |
-| TypeScript compiler | Static type checking                             |
-| Vercel              | Frontend deployment platform                     |
-| Render              | Potential backend or service deployment platform |
+The project uses the following technologies, subject to the actual repository configuration.
 
-Confirm the installed versions and actual deployment configuration from the project's dependency and configuration files.
+| Technology          | Purpose                                                    |
+| ------------------- | ---------------------------------------------------------- |
+| Python              | Data ingestion and quantitative processing                 |
+| TypeScript          | Typed application development                              |
+| Next.js             | Web application and API routes                             |
+| React               | User interface                                             |
+| Supabase            | Database and configured backend services                   |
+| PostgreSQL          | Relational data storage                                    |
+| pytest              | Python testing                                             |
+| ESLint              | Code quality and linting                                   |
+| TypeScript compiler | Static type checking                                       |
+| Vercel              | Frontend hosting, when configured                          |
+| Render              | Compatible backend or processing services, when configured |
+
+Refer to the project's dependency and configuration files for exact versions and installed packages.
+
+---
+
+## System Architecture
+
+SwarnaNet separates the responsibilities of the user interface, application API, quantitative pipeline, and database integration.
+
+| Layer                   | Responsibility                                         |
+| ----------------------- | ------------------------------------------------------ |
+| Presentation            | Dashboard and analytical views                         |
+| Application             | API request handling and application logic             |
+| Data ingestion          | Source-file processing and normalization               |
+| Quantitative processing | Feature generation and opportunity evaluation          |
+| Backtesting             | Historical strategy evaluation and performance metrics |
+| Persistence             | Configured Supabase and PostgreSQL integration         |
+| Validation              | Automated tests, reports, and data-quality checks      |
+| Refresh                 | Controlled processing of updated data                  |
+
+This separation helps keep quantitative calculations testable and makes it easier to identify where a data or calculation error originates.
+
+The actual repository structure remains the authoritative source for implementation details.
 
 ---
 
 ## Project Structure
 
-The following is an illustrative structure. The actual repository may use different paths; preserve the existing structure until it has been audited.
+The following tree illustrates the project's major responsibilities. It is not a guarantee that every directory exists at exactly this location.
 
 ```text
 SWARNANET/
@@ -263,41 +402,20 @@ SWARNANET/
 └── package.json
 ```
 
-The `template/` directory can hold reference templates or supporting files contributed by collaborators. It should not contain secrets or duplicate application configuration. Its presence alone does not normally prevent deployment.
+### Directory Responsibilities
 
-**Do not restructure the actual repository to match this example blindly.** Keep paths aligned with existing imports, scripts, build configuration, and deployment settings.
+* `frontend/` — frontend application code, if separated into its own directory.
+* `src/pipeline/` — ingestion and refresh processing modules.
+* `scripts/` — supporting execution scripts.
+* `data/incoming/` — incoming market-data files, where configured.
+* `data/processed/` — normalized datasets and generated analytical outputs.
+* `reports/` — validation and processing reports.
+* `tests/` — automated tests.
+* `template/` — collaborator-provided templates or reference material.
+* `.env.example` — placeholder configuration documentation.
+* `.gitignore` — rules for excluding sensitive files and unnecessary generated artifacts.
 
----
-
-## Quantitative Validation
-
-A backtest is only useful when its assumptions and costs are visible.
-
-SwarnaNet distinguishes between:
-
-* Gross PnL before estimated transaction costs.
-* Transaction costs.
-* Net PnL after estimated transaction costs.
-* Risk-adjusted performance metrics.
-* Out-of-sample results, where implemented.
-
-### Previously Reported Backtest Snapshot
-
-| Metric                     | Reported Result |
-| -------------------------- | --------------: |
-| Backtest trades            |              42 |
-| Gross PnL                  |       ₹5,031.00 |
-| Transaction costs          |      ₹15,411.76 |
-| Net PnL                    |     -₹10,380.76 |
-| Net Sharpe ratio           |         -1.7888 |
-| Out-of-sample net PnL      |      -₹5,840.35 |
-| Out-of-sample Sharpe ratio |         -3.5024 |
-
-These are previously reported project outputs, not independently revalidated results.
-
-The reported strategy was classified as **friction-constrained** because estimated transaction costs exceeded the gross edge.
-
-A theoretical pricing discrepancy does not automatically represent a profitable, executable trading opportunity.
+The exact directory layout should match the actual repository. Do not move files merely to match this illustration.
 
 ---
 
@@ -305,14 +423,14 @@ A theoretical pricing discrepancy does not automatically represent a profitable,
 
 ### Prerequisites
 
-Install the tools required by the actual project configuration:
+Install the tools required by the project:
 
 * Git
 * Python
 * Node.js and npm
-* A configured Supabase project, if remote database functionality is required
+* Access to the configured Supabase project, if required
 
-Use the Python and Node.js versions specified in the repository's configuration files, if present.
+Use the versions specified in the repository configuration files when available.
 
 ### 1. Clone the Repository
 
@@ -321,21 +439,23 @@ git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd SWARNANET
 ```
 
-Replace the placeholder with your actual repository URL.
+Replace the placeholder with the actual repository URL.
 
 ### 2. Install Frontend Dependencies
 
-Run the installation command from the directory containing the frontend's `package.json`:
+Navigate to the directory containing the applicable `package.json`.
+
+Run:
 
 ```bash
 npm install
 ```
 
-If the project uses a lockfile, prefer the corresponding reproducible installation command, such as `npm ci`.
+If the repository includes a valid npm lockfile, prefer `npm ci` for a reproducible installation.
 
-### 3. Set Up Python
+### 3. Configure Python
 
-Create a virtual environment from the project root:
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -347,193 +467,16 @@ Activate it on Windows:
 .venv\Scripts\Activate.ps1
 ```
 
-Install the project's documented Python dependencies, if any:
+Install the dependencies documented by the repository. If a `requirements.txt` file exists:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If the repository does not contain `requirements.txt`, follow the actual dependency configuration rather than guessing dependencies.
+If Python dependencies are managed differently, follow the actual configuration instead of creating an assumed dependency list.
 
 ### 4. Configure Environment Variables
 
-Create a local environment file based on the project's environment-variable documentation.
+Use the environment-variable names referenced by the application.
 
-For example:
-
-```powershell
-Copy-Item .env.example .env.local
-```
-
-Use this command only if `.env.example` exists and matches the application's actual configuration.
-
-Fill in the required values locally. Never commit real credentials.
-
----
-
-## Environment Configuration
-
-Environment variables depend on the implemented application and deployment setup.
-
-Potential configuration categories include:
-
-| Category                         | Purpose                                               |
-| -------------------------------- | ----------------------------------------------------- |
-| Supabase project URL             | Connect to the configured Supabase project            |
-| Supabase publishable key         | Client-side access under configured security policies |
-| Supabase secret/service-role key | Privileged server-side operations, only if required   |
-| Python runtime configuration     | Pipeline and data-processing settings                 |
-
-These are categories, not confirmed variable names. Use the exact variable names referenced in the source code.
-
-**Security requirements:**
-
-* Do not commit `.env.local`, `.env`, or files containing real secrets.
-* Never expose a Supabase service-role or secret key in client-side code.
-* Configure Row Level Security (RLS) and appropriate database permissions.
-* Keep `.env.example` limited to placeholder values.
-* Rotate any credential that has been accidentally exposed.
-
----
-
-## Running the Application
-
-Run the application using the scripts defined in the relevant `package.json` and Python configuration.
-
-For a Next.js frontend, the typical development command is:
-
-```bash
-npm run dev
-```
-
-The actual execution command, port, and available routes depend on the current configuration.
-
-### Running the Data Pipeline
-
-The previously reported ingestion entry point is:
-
-```bash
-python src/pipeline/ingest.py
-```
-
-Run it only after confirming that the source data and expected paths are available.
-
-The refresh pipeline and API routes should be run and tested according to their current implementation and documented prerequisites.
-
----
-
-## Testing and Verification
-
-Run the checks configured by the repository.
-
-### Python Tests
-
-```bash
-python -m pytest
-```
-
-### TypeScript Validation
-
-```bash
-npx tsc --noEmit
-```
-
-### Linting
-
-```bash
-npm run lint
-```
-
-### Production Build
-
-```bash
-npm run build
-```
-
-These commands assume the corresponding tools and scripts are configured.
-
-A successful build does not by itself prove that the market-data pipeline, database permissions, API routes, or quantitative results are correct. Test those components separately.
-
----
-
-## Data Refresh
-
-SwarnaNet has a reported refresh workflow for processing updated market data and synchronizing supported outputs.
-
-Before running a refresh:
-
-1. Verify the incoming data source.
-2. Confirm the trading and expiry dates.
-3. Validate source columns and units.
-4. Run the configured refresh process.
-5. Inspect the refresh status and validation reports.
-6. Verify that database updates and downstream calculations succeeded.
-
-Do not interpret a successful HTTP response as proof that the entire pipeline completed correctly. Confirm the actual processing results.
-
-Automated refresh scheduling depends on the execution environment and availability of valid source data.
-
----
-
-## Deployment
-
-SwarnaNet may be deployable using Vercel for the web application and Render for compatible backend services. The correct arrangement depends on the current repository structure.
-
-### Before Deploying to Vercel
-
-* Confirm the correct project root directory.
-* Verify the build command and output configuration.
-* Configure required environment variables.
-* Confirm that frontend routes and API dependencies work in the production environment.
-* Check that no local Windows paths are required at runtime.
-
-### Before Deploying to Render
-
-* Confirm the service type and entry point.
-* Configure Python or Node.js versions and dependencies.
-* Set environment variables in the service dashboard.
-* Verify database connectivity and access controls.
-* Confirm that long-running refresh jobs and scheduled tasks are supported by the chosen service configuration.
-
-### Deployment Warning
-
-A separate `template/` directory generally does not affect deployment by itself. However, build scripts, imports, workspace configuration, and deployment root settings can change that behavior.
-
-Validate the actual deployment configuration before publishing.
-
----
-
-## Security
-
-* Never commit credentials, private keys, access tokens, or real environment files.
-* Review `.gitignore` before staging files.
-* Avoid committing unnecessary build artifacts and local caches.
-* Assess large datasets before uploading them to GitHub.
-* Do not assume that hiding a file in the GitHub interface removes it from repository history.
-* Use server-side authorization for privileged database operations.
-* Review Supabase Row Level Security policies.
-* Avoid logging sensitive credentials or private user information.
-
----
-
-## Limitations
-
-* Results depend on the quality and completeness of available historical data.
-* Historical performance does not guarantee future performance.
-* Estimated transaction costs may differ from actual execution costs.
-* Historical daily market data does not establish live executable prices.
-* Statistical relationships can change over time.
-* Opportunities may disappear after accounting for liquidity, slippage, brokerage, taxes, and other costs.
-* The platform should not be represented as a live execution terminal unless live data and execution integrations have actually been implemented and verified.
-
----
-
-## Disclaimer
-
-SwarnaNet is a quantitative research and analytics prototype developed for educational, research, and demonstration purposes.
-
-It does not guarantee profits, provide guaranteed arbitrage opportunities, or constitute financial, investment, or trading advice. Historical backtest results may not represent future performance. Users must independently validate data, model assumptions, transaction costs, and applicable regulatory requirements before making financial decisions.
-
----
-
-**SwarnaNet — Quantitative Analysis. Transparent Validation. Data-Driven Decisions.**
+If a matching `.env.example` exists
