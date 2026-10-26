@@ -47,29 +47,46 @@ flowchart TD
 ```
 
 *The diagram illustrates the intended architecture. Verify the actual backend and database connections before claiming they are operational.*-level view of the application flow. The deployed URLs are listed above; actual API and database connectivity should be checked against the current deployment and configuration.
-How the data pipeline works
+
+## How the Data Pipeline Works
+
+The pipeline converts raw MCX CSV archives into a structured dataset for quantitative analysis. It also records duplicate handling and validation results.
+
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
 flowchart TD
-    A[MCX CSV Archives] --> B[Read ZIP and CSV Files]
-    B --> C[Map Source Headers]
-    C --> D[Parse Trading and Expiry Dates]
-    D --> E[Detect Duplicate Records]
-    E --> F{Validation}
-    F -->|Accepted| G[Sort by Symbol, ExpiryDate, Date]
-    F -->|Rejected| H[Quarantine Log]
-    G --> I[Normalized Dataset]
-    H --> J[Validation Reports]
-    I --> J
+    A["MCX CSV Archives"] --> B["Read ZIP and CSV Files"]
+    B --> C["Map Source Headers"]
+    C --> D["Parse Trading and Expiry Dates"]
+    D --> E["Normalize Fields"]
+    E --> F["Detect Duplicate Records"]
+    F --> G{"Validation Outcome"}
+
+    G -->|Accepted| H["Sort by Symbol, ExpiryDate and Date"]
+    G -->|Rejected| I["Quarantine CSV"]
+
+    H --> J[("Normalized Dataset")]
+    I --> K["Validation Report"]
+    J --> K
+    F --> L["Duplicate Count and Audit"]
+    L --> K
+
+    classDef blue fill:#082F55,stroke:#3B82F6,color:#FFFFFF,stroke-width:1px
+    classDef decision fill:#123C70,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px
+
+    class A,B,C,D,E,F,H,I,J,K,L blue
+    class G decision
+
+    linkStyle default stroke:#3B82F6,stroke-width:1.5px
 ```
-The ingestion code uses Python standard-library utilities to read archive and CSV content in memory. It maps source fields to a nine-column schema:
 
-Symbol, Date, ExpiryDate, Open, High, Low, Close, Volume, OpenInterest
+### Pipeline Highlights
 
-A couple of details matter here:
-- Volume is read from Volume(Lots), and OpenInterest from Open Interest(Lots). The similarly named Volume(In 000’s) field is not used for volume.
-- Trading and expiry dates are converted to ISO YYYY-MM-DD format. The expiry recorded in each row is kept; it is not guessed from a filename.
-- Accepted records are sorted by symbol, expiry date, and trading date. Duplicate records are accounted for separately from accepted and quarantined rows.
+- **In-memory processing:** Reads ZIP archives and CSV files without extracting all source files first.
+- **Canonical schema:** Standardizes source columns into nine fields, including OHLC prices, volume, and open interest.
+- **Expiry awareness:** Preserves the expiry date recorded in each source row.
+- **Duplicate handling:** Removes duplicate records and accounts for them in the validation results.
+- **Traceable outputs:** Generates the normalized dataset, quarantine log, and audit reports.
+  
 Dataset audit
 The following figures were reported for a previous ingestion run. Run the pipeline and inspect the reports to confirm them if the source files or code have changed.
 Measure	Reported result
