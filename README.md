@@ -172,56 +172,93 @@ Contract specifications and quotation conventions can vary by contract and date.
 *Technology roles should be confirmed against the current repository and deployment configuration.*
 
 
-Check the repository configuration for exact dependencies and versions.
-Project file structure
+
+## Project File Structure
+
+The project is organized around the frontend, source datasets, ingestion pipeline, processed outputs, and validation tests.
+
+```text
 SWARNANET/
-├── frontend/                         # Web application
+├── frontend/                    # Web application
 │   └── src/
-│       ├── app/                      # Pages and routes
-│       ├── components/               # Reusable interface components
-│       ├── hooks/                    # Shared React hooks
-│       ├── lib/                      # Utilities and client setup
-│       └── types/                    # TypeScript types
-├── dataset/                          # Source MCX data, grouped by contract
+│       ├── app/                 # Pages and routes
+│       ├── components/          # Reusable interface components
+│       ├── hooks/               # Shared React hooks
+│       ├── lib/                 # Utilities and client setup
+│       └── types/               # TypeScript types
+│
+├── dataset/                     # Source MCX data by contract
 │   ├── GOLDM/
 │   ├── GOLDGUINEA/
 │   ├── GOLDPETAL/
 │   └── GOLDTEN/
+│
 ├── src/
 │   └── pipeline/
-│       └── ingest.py                 # Ingestion and normalization
+│       └── ingest.py            # Ingestion and normalization
+│
 ├── data/
 │   └── processed/
 │       ├── mcx_gold_normalized.csv
 │       └── quarantine.csv
+│
 ├── reports/
 │   ├── ingestion_validation.md
 │   └── dataset_audit.md
+│
 ├── tests/
 │   └── test_ingestion.py
-├── .env.example                      # Example environment settings, if present
+│
+├── .env.example                 # Example environment settings
 └── README.md
-This is a guide to the main project areas and reported output files. Folder names can differ between local copies, so use the current repository as the source of truth.
-Run locally
-From the project root, install dependencies using the project’s setup files, then run the pipeline and tests:
+```
+
+*This structure is a guide to the main project areas and reported output files. Some paths may differ between local copies; use the current repository as the source of truth.*
+
+## Running Locally
+
+From the project root, install the dependencies using the project's setup files. Then run the ingestion pipeline and tests:
+
+```bash
 python src/pipeline/ingest.py
 python -m pytest
-These commands were used in the reported ingestion workflow. Confirm that the paths and required dependencies match your current checkout. Set local environment variables from the provided example configuration, if available, and do not commit real credentials.
+```
 
-Expected pipeline outputs from the reported run:
-- data/processed/mcx_gold_normalized.csv
-- data/processed/quarantine.csv
-- reports/ingestion_validation.md
-- reports/dataset_audit.md
-Future work
-There are several practical areas to improve next:
-- Finish the login system: Add Supabase sign-up, login, logout, password reset, and session handling. Protect private pages and configure Row Level Security policies before storing user-specific data.
-- Add more market history: Bring in more years of reliable MCX data and keep source details with each import. If machine-learning models are added or used in the analysis, retrain and evaluate them on the expanded data rather than assuming more rows automatically improve results.
-- Make ingestion more robust: Support incremental imports, detect changed CSV headers, make reruns safe, and add clearer error logs and row-level reconciliation.
-- Improve data checks: Flag missing prices, unusual volume or open-interest changes, and inconsistent records for review.
-- Test strategy assumptions more thoroughly: Review transaction fees and slippage, run sensitivity checks, and expand walk-forward and out-of-sample testing.
-- Polish the dashboard: Show when data was last refreshed, provide useful exports, and make contract and expiry comparisons easier to inspect.
-- Add end-to-end checks: Test the pipeline, API, database permissions, refresh process, and frontend together—not just as separate parts.
-These are planned improvements, not statements that the features are already complete.
-Note on use
-SwarnaNet is a research and demonstration project, not a trading recommendation. Historical backtests do not predict future results, and the reported strategy results above were negative after estimated costs. Any real trading decision would need independent checks of the data, contract terms, liquidity, execution assumptions, and costs.
+Configure local environment variables using the provided example configuration, if available. Never commit real credentials or secret keys.
+
+Confirm that the commands, dependencies, and paths match your current checkout before running them.
+
+### Expected Pipeline Outputs
+
+The following files were reported as outputs of the ingestion workflow:
+
+- `data/processed/mcx_gold_normalized.csv`
+- `data/processed/quarantine.csv`
+- `reports/ingestion_validation.md`
+- `reports/dataset_audit.md`
+
+## Future Work
+
+There are several practical areas to improve next.
+
+- **Complete the login system:** Add Supabase sign-up, login, logout, password reset, and session handling. Protect private pages and configure Row Level Security (RLS) policies before storing user-specific data.
+
+- **Expand historical data:** Bring in more years of reliable MCX data and preserve source details with each import. If machine-learning models are introduced, train and evaluate them on the expanded dataset rather than assuming more rows will automatically improve results.
+
+- **Strengthen the ingestion pipeline:** Support incremental imports, detect changed CSV headers, make reruns safe, and improve error logging and row-level reconciliation.
+
+- **Improve data checks:** Flag missing prices, unusual volume or open-interest changes, and inconsistent records for review.
+
+- **Improve strategy testing:** Review transaction fees and slippage assumptions, run sensitivity checks, and expand walk-forward and out-of-sample testing.
+
+- **Polish the dashboard:** Show when data was last refreshed, provide useful exports, and make contract and expiry comparisons easier to inspect.
+
+- **Add end-to-end testing:** Test the pipeline, API, database permissions, refresh process, and frontend together—not just as separate components.
+
+These are planned improvements, not claims that the features are already complete.
+
+## Responsible Use
+
+SwarnaNet is a research and demonstration project, not a trading recommendation. Historical backtests do not predict future results, and the reported strategy results above were negative after estimated costs.
+
+Any real trading decision requires independent checks of the data, contract specifications, liquidity, execution assumptions, and transaction costs.
