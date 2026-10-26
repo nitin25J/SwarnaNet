@@ -1,8 +1,13 @@
-SwarnaNet
+                                                                     SwarnaNet
+
 MCX Gold Derivatives Intelligence & Cross-Contract Analysis
 Hack in Hills ’26 · Problem Statement 03
 
+
+
 SwarnaNet is a project for exploring historical MCX gold-contract data and checking whether differences between contracts might represent a useful relative-value opportunity. The pipeline brings raw CSV files into a consistent format, while the analysis and backtesting work considers contract specifications and estimated trading costs.
+
+
 
 Open Frontend · Backend URL
 The problem
