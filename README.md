@@ -1,61 +1,60 @@
 SwarnaNet
-MCX Gold Derivatives Intelligence & Cross-Contract Analysis
+MCX Gold Derivatives Intelligence & Cross-Contract Relative Value
 Hack in Hills ’26 · Problem Statement 03
+A price difference is not an opportunity until the numbers survive the costs.
 
-An expiry-aware data pipeline and web platform for exploring historical MCX gold-contract data.
+SwarnaNet is a quantitative research platform for analyzing historical MCX gold contracts, evaluating cross-contract relative-value signals, and testing strategies after estimated transaction costs.
 
-
-Open Frontend · Backend URL
-</div>
-
-01 · Problem
-MCX gold contracts differ in contract size, specifications, and expiry. Comparing historical records across raw files requires consistent schemas, reliable date parsing, duplicate handling, and traceable data-quality checks.
-02 · Solution
-SwarnaNet brings four contract categories into a common data workflow:
-
-GOLDM · GOLDGUINEA · GOLDPETAL · GOLDTEN
-
-The ingestion pipeline standardizes raw CSV records and preserves row-level expiry dates, creating a structured historical dataset for downstream application use.
+Open Frontend · Backend API
+The Challenge
+MCX gold contracts differ in size, purity, quotation conventions, and expiry. Raw prices cannot be compared blindly: apparent discrepancies may reflect contract differences, and trading costs can erase a theoretical edge.
+What SwarnaNet Does
+- Expiry-aware ingestion — standardizes historical MCX CSV data while preserving each row’s recorded expiry.
+- Data validation — maps source headers, parses dates, detects duplicates, and generates audit outputs.
+- Cross-contract analysis — prepares structured observations for contract-aware comparisons and opportunity evaluation.
+- Cost-aware backtesting — evaluates gross results against estimated transaction costs and net performance.
+- Analytics dashboard — presents supported market-data and quantitative outputs.
 System Architecture
 ```mermaid
 flowchart LR
-    A[MCX CSV Archives] --> B[Python Ingestion Pipeline]
-    B --> C[(Normalized Dataset)]
-    B --> D[Validation Reports]
-    C --> E[Backend API<br/>Render]
-    E <--> F[(Supabase<br/>Database)]
-    E --> G[Frontend<br/>Vercel]
-    G --> H[Market Data UI]
+    A[MCX Gold CSV Archives] --> B[Python Ingestion Pipeline]
+    B --> C[Normalize & Validate]
+    C --> D[(Canonical Dataset)]
+    C --> E[Audit Reports]
+    D --> F[Quantitative Features]
+    F --> G[Opportunity Evaluation]
+    G --> H[Cost-Aware Backtesting]
+    H --> I[Backend API]
+    I <--> J[(Supabase / PostgreSQL)]
+    I <--> K[Frontend Dashboard]
 ```
-Architecture overview: This is a high-level system view. Confirm each live connection in the current code and deployment configuration; deployment URLs alone do not prove database connectivity.
+Architecture overview; confirm live service and database connectivity in the current deployment configuration.
 Data Pipeline
 ```mermaid
 flowchart TD
-    A[Archive Discovery] --> B[In-memory ZIP / CSV Reading]
+    A[CSV Archives] --> B[In-memory Read]
     B --> C[Canonical Header Mapping]
-    C --> D[Trading Date + Expiry Date Parsing]
-    D --> E[Field Normalization]
-    E --> F[Duplicate Detection]
-    F --> G{Validation outcome}
-    G -->|Accepted| H[Sort by Symbol, ExpiryDate, Date]
-    G -->|Rejected| I[Quarantine CSV]
-    H --> J[Normalized CSV]
-    I --> K[Validation Report]
-    J --> K
+    C --> D[Trading & Expiry Date Parsing]
+    D --> E[Duplicate Detection]
+    E --> F{Validation}
+    F -->|Accepted| G[Sort by Symbol, ExpiryDate, Date]
+    F -->|Rejected| H[Quarantine Log]
+    G --> I[Normalized Dataset]
+    H --> J[Validation Reports]
+    I --> J
 ```
-Pipeline engineering
-- In-memory ingestion: Reads archive and CSV content using Python standard-library utilities without first extracting all source files to disk.
-- Canonical schema mapping: Normalizes source headers into Symbol, Date, ExpiryDate, Open, High, Low, Close, Volume, and OpenInterest.
-- Explicit field semantics: Uses Volume(Lots) for volume and Open Interest(Lots) for open interest; avoids confusing volume with Volume(In 000’s).
-- Deterministic date normalization: Converts trading and expiry dates to ISO YYYY-MM-DD, retaining the expiry date recorded in each row rather than inferring it from a filename.
-- Deduplication and reconciliation: Identifies duplicate/overlapping records and accounts for source rows as accepted, duplicate, or quarantined.
-- Expiry-aware ordering: Sorts records by Symbol, ExpiryDate, and Date.
-- Auditability: Produces a normalized dataset, quarantine log, and Markdown validation/audit reports.
-Data Quality Snapshot
-The latest figures previously reported for the ingestion run are shown below; rerun the pipeline and tests to reconfirm them against the current checkout.
-Measure	Reported result
-Raw CSV files	43
-Source rows	3,603
+Pipeline Details
+- Uses Python standard-library utilities for ZIP/CSV processing.
+- Normalizes records to Symbol, Date, ExpiryDate, Open, High, Low, Close, Volume, and OpenInterest.
+- Uses Volume(Lots) and Open Interest(Lots) for their respective fields; avoids confusing volume with Volume(In 000’s).
+- Converts dates to ISO YYYY-MM-DD and preserves row-level expiry values instead of inferring expiry from filenames.
+- Deduplicates overlapping records and sorts accepted observations by contract and date.
+- Produces a normalized dataset, quarantine log, and validation/audit reports.
+Dataset Audit
+Previously reported ingestion run — rerun the pipeline to verify against the current checkout.
+Metric	Reported result
+Source CSV files	43
+Raw source rows	3,603
 Accepted normalized rows	3,269
 Duplicate rows removed	334
 Quarantined rows	0
@@ -69,9 +68,6 @@ flowchart LR
     A --> D["0<br/>Quarantined"]
 ```
 Reconciliation: 3,603 = 3,269 + 334 + 0
-
-This demonstrates row-count accounting for that run; it does not alone prove that every market observation is economically correct.
-Accepted records by contract
 Contract	Accepted rows
 GOLDM	612
 GOLDGUINEA	879
@@ -79,65 +75,47 @@ GOLDPETAL	901
 GOLDTEN	877
 
 
-Frontend · Backend · Database
-```mermaid
-flowchart TB
-    subgraph CLIENT["Frontend · Vercel"]
-        UI[Dashboard / User Interface]
-        VIEW[Charts and Data Views]
-        UI --> VIEW
-    end
-    subgraph SERVICE["Backend · Render"]
-        API[HTTP API Layer]
-        LOGIC[Request Handling / Business Logic]
-        API --> LOGIC
-    end
-    subgraph STORAGE["Supabase · Database"]
-        DB[(Persistent Data Store)]
-    end
-    VIEW <--> API
-    LOGIC <--> DB
-```
-- Frontend — Vercel: User-facing web application for presenting contract data and analysis.
-- Backend — Render: Hosted backend endpoint intended to provide application/API functionality. Verify health and API routes before claiming operational status.
-- Database — Supabase: Database integration should be confirmed in current configuration. Document schema, authentication, row-level security (RLS), and data flow only after verifying them.
-A deployed URL is not proof that the frontend is connected to the backend or that the backend is connected to Supabase. Validate these integrations before final submission.
-
-Contract Universe
-Symbol	Contract category
-GOLDM	Gold Mini
-GOLDGUINEA	Gold Guinea
-GOLDPETAL	Gold Petal
-GOLDTEN	Gold Ten
+Backtesting: Costs Matter
+Previously reported results; not independently revalidated in this README.
+Metric	Reported result
+Trades	42
+Gross PnL	₹5,031.00
+Estimated transaction costs	₹15,411.76
+Net PnL	−₹10,380.76
+Net Sharpe ratio	−1.7888
+Out-of-sample net PnL	−₹5,840.35
+Out-of-sample Sharpe ratio	−3.5024
 
 
-Refer to official MCX contract specifications for contract size, quotation convention, purity, and expiry rules before using these values in quantitative comparisons.
+The reported strategy was friction-constrained: estimated transaction costs exceeded gross profit, producing negative net PnL. This is a useful validation result—not evidence of profitability. It highlights why a price discrepancy must be assessed against costs and assumptions before being treated as an opportunity.
+Supported Contracts
+GOLDM · GOLDGUINEA · GOLDPETAL · GOLDTEN
+
+Contract specifications, quotation units, purity, and expiry rules should be verified against official MCX specifications before quantitative comparisons.
 Technology
-Component	Role
-Python standard library	Archive and CSV ingestion, date parsing, normalization
-CSV	Canonical processed dataset and quarantine log
-Pytest	Ingestion test suite
-Vercel	Frontend deployment
-Render	Backend deployment
-Supabase	Database integration; verify current connection and schema
+Layer	Technologies
+Data pipeline & quantitative processing	Python
+Dataset & audit outputs	CSV, Markdown
+Testing	pytest
+Frontend	Next.js, React, TypeScript
+Database integration	Supabase / PostgreSQL
+Hosting	Vercel (frontend), Render (backend)
 
 
+Technology and service roles should be checked against the current repository and deployment configuration.
 Run Locally
-1. Get the project repository.
-2. Install dependencies using the repository’s manifest files.
-3. Configure required environment variables from the example configuration, if available.
-4. Run the ingestion pipeline (previously reported command: python src/pipeline/ingest.py).
-5. Run tests (previously reported command: pytest).
-6. Start frontend and backend using their respective project instructions.
-Expected artifacts previously reported:
+1. Install dependencies using the project’s manifests and setup instructions.
+2. Configure required environment variables using the provided example file, if available. Never commit secrets.
+3. Run the ingestion pipeline:
+   python src/pipeline/ingest.py
+4. Run tests:
+   python -m pytest
+Previously reported outputs:
 - data/processed/mcx_gold_normalized.csv
 - data/processed/quarantine.csv
 - reports/ingestion_validation.md
 - reports/dataset_audit.md
-Confirm these paths exist in the current checkout before relying on them.
+Confirm these paths and commands against the current checkout.
 Responsible Use
-SwarnaNet is a data-analysis tool, not a guarantee of arbitrage or profit. Contract sizes, purity, quotation units, expiry alignment, liquidity, transaction costs, and data quality all affect interpretation. Validate any signal independently before making financial decisions.
-<div align="center">
-
-SwarnaNet · Hack in Hills ’26 · Problem Statement 03
-</div
+SwarnaNet is an educational and quantitative research prototype—not a guarantee of arbitrage or profit, and not financial advice. Historical results do not predict future performance. Data quality, contract specifications, liquidity, slippage, transaction costs, and execution assumptions can materially change outcomes.
+SwarnaNet · Analyze the relationship. Validate the opportunity. Respect the costs.
