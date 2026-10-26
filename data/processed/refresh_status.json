@@ -1,0 +1,25 @@
+{
+  "timestamp_iso": "2026-10-26T20:01:35.832031",
+  "status": "SUCCESS",
+  "latest_eod_date": "2026-10-23",
+  "total_canonical_records": 3269,
+  "new_records_added": 0,
+  "duplicates_reconciled": 3269,
+  "quarantined_count": 0,
+  "features_computed_count": 3269,
+  "opportunities_evaluated_count": 2,
+  "actionable_candidates_count": 0,
+  "friction_constrained_count": 1,
+  "supabase_synced": true,
+  "supabase_records_upserted": 3269,
+  "data_source_description": "VERIFIED_MCX_HISTORICAL_EOD_REPOSITORY",
+  "stage_durations_ms": {},
+  "audit_notes": [
+    "MCX public portal check: HTTPError (Online portal requires CAPTCHA/session; falling back to verified canonical data store)",
+    "Preserving verified historical EOD dataset (3,269 records, latest date: 2026-10-23)",
+    "Stage 3 Reconciliation: 0 new records detected; 3269 duplicates reconciled.",
+    "Stage 4 Features: Successfully computed 3,269 feature rows across 4 contracts.",
+    "Stage 5 Opportunities: 2 pairs evaluated. Actionable: 0, Friction Constrained: 1.",
+    "Stage 6 Supabase: Connected to https://djhtcatcmsantpgqgglf.supabase.co. Verified existing record count: 3,269."
+  ]
+}
