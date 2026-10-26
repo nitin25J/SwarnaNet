@@ -1,25 +1,25 @@
                                                                      SwarnaNet
+# SwarnaNet
 
-MCX Gold Derivatives Intelligence & Cross-Contract Analysis
-Hack in Hills ’26 · Problem Statement 03
+### MCX Gold Derivatives Intelligence & Cross-Contract Analysis
 
+**Hack in Hills ’26 · Problem Statement 03**
 
+SwarnaNet is a project for exploring historical MCX gold-contract data and checking whether differences between contracts might represent a useful relative-value opportunity. The pipeline brings raw CSV files into a consistent format, while the analysis and backtesting account for contract specifications and estimated trading costs.
 
-SwarnaNet is a project for exploring historical MCX gold-contract data and checking whether differences between contracts might represent a useful relative-value opportunity. The pipeline brings raw CSV files into a consistent format, while the analysis and backtesting work considers contract specifications and estimated trading costs.
+**[Open Frontend](https://swarna-net.vercel.app/) · [Backend API](https://swarnanet.onrender.com/)**
 
+## The Problem
 
+MCX gold contracts can differ in size, purity, quotation units, and expiry. Comparing their raw prices without accounting for these differences can lead to misleading conclusions. Even a real price gap may not be worth trading once brokerage, taxes, exchange charges, and slippage are considered.
 
-Open Frontend · Backend URL
-The problem
-MCX gold contracts can differ in size, purity, quotation units, and expiry. Comparing their raw prices without accounting for those differences can lead to misleading conclusions. Even a real price gap may not be worth trading once brokerage, taxes, exchange charges, and slippage are considered.
+## What's Included
 
-SwarnaNet is being built to make these comparisons more structured and easier to check.
-What’s included
 - Historical CSV ingestion and schema normalization.
-- Trading-date and contract-expiry parsing, with expiry kept from each source row.
+- Trading-date and contract-expiry parsing, preserving expiry dates from each source row.
 - Duplicate detection and data-quality reports.
 - A normalized dataset for downstream analysis.
-- Cross-contract opportunity analysis and historical backtesting, based on the implemented strategy.
+- Cross-contract opportunity analysis and historical backtesting using the implemented strategy.
 - A web interface for viewing available data and analytical results.
 System architecture
 ```mermaid
