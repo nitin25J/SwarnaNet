@@ -1,4 +1,4 @@
-                                                                     SwarnaNet
+                                                                     
 # SwarnaNet
 
 ### MCX Gold Derivatives Intelligence & Cross-Contract Analysis
