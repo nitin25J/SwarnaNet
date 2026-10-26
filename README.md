@@ -21,22 +21,32 @@ MCX gold contracts can differ in size, purity, quotation units, and expiry. Comp
 - A normalized dataset for downstream analysis.
 - Cross-contract opportunity analysis and historical backtesting using the implemented strategy.
 - A web interface for viewing available data and analytical results.
-System architecture
+
+## System Architecture
+
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
 flowchart TD
-    A[MCX Gold CSV Archives] --> B[Python Ingestion Pipeline]
-    B --> C[Normalize and Validate]
-    C --> D[(Canonical Dataset)]
-    C --> E[Audit Reports]
-    D --> F[Quantitative Features]
-    F --> G[Opportunity Evaluation]
-    G --> H[Cost-Aware Backtesting]
-    H --> I[Backend API]
-    I <--> J[(Supabase / PostgreSQL)]
-    I <--> K[Frontend Dashboard]
+    A["MCX Gold CSV Archives"] --> B["Python Ingestion Pipeline"]
+    B --> C["Normalize and Validate"]
+
+    C --> D[("Canonical Dataset")]
+    C --> E["Audit Reports"]
+
+    D --> F["Quantitative Features"]
+    F --> G["Opportunity Evaluation"]
+    G --> H["Cost-Aware Backtesting"]
+    H --> I["Backend API · Render"]
+
+    I <--> J[("Supabase / PostgreSQL")]
+    I <--> K["Frontend Dashboard · Vercel"]
+
+    classDef blue fill:#082F55,stroke:#3B82F6,color:#FFFFFF,stroke-width:1px
+    class A,B,C,D,E,F,G,H,I,J,K blue
+
+    linkStyle default stroke:#3B82F6,stroke-width:1.5px
 ```
-This is a high-level view of the application flow. The deployed URLs are listed above; actual API and database connectivity should be checked against the current deployment and configuration.
+
+*The diagram illustrates the intended architecture. Verify the actual backend and database connections before claiming they are operational.*-level view of the application flow. The deployed URLs are listed above; actual API and database connectivity should be checked against the current deployment and configuration.
 How the data pipeline works
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
