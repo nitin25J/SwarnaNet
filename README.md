@@ -48,6 +48,7 @@ flowchart TD
 
 *The diagram illustrates the intended architecture. Verify the actual backend and database connections before claiming they are operational.*-level view of the application flow. The deployed URLs are listed above; actual API and database connectivity should be checked against the current deployment and configuration.
 
+
 ## How the Data Pipeline Works
 
 The pipeline converts raw MCX CSV archives into a structured dataset for quantitative analysis. It also records duplicate handling and validation results.
@@ -86,61 +87,89 @@ flowchart TD
 - **Expiry awareness:** Preserves the expiry date recorded in each source row.
 - **Duplicate handling:** Removes duplicate records and accounts for them in the validation results.
 - **Traceable outputs:** Generates the normalized dataset, quarantine log, and audit reports.
-  
-Dataset audit
-The following figures were reported for a previous ingestion run. Run the pipeline and inspect the reports to confirm them if the source files or code have changed.
-Measure	Reported result
-Source CSV files	43
-Raw source rows	3,603
-Accepted normalized rows	3,269
-Duplicate rows removed	334
-Quarantined rows	0
-Ingestion tests	7 passed
 
+
+## Dataset Audit
+
+The following figures were reported in a previous ingestion run. Rerun the pipeline and review the reports to confirm them against the current dataset.
+
+| Metric | Reported Result |
+|---|---:|
+| Source CSV files | 43 |
+| Raw source rows | 3,603 |
+| Accepted normalized rows | 3,269 |
+| Duplicate rows removed | 334 |
+| Quarantined rows | 0 |
+| Ingestion tests passed | 7 |
+
+### Row Reconciliation
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
 flowchart TD
-    A[3,603 source rows] --> B[3,269 accepted]
-    A --> C[334 duplicates]
-    A --> D[0 quarantined]
+    A["3,603 Source Rows"] --> B["3,269 Accepted"]
+    A --> C["334 Duplicates"]
+    A --> D["0 Quarantined"]
+
+    classDef blue fill:#082F55,stroke:#3B82F6,color:#FFFFFF,stroke-width:1px
+    class A,B,C,D blue
+    linkStyle default stroke:#3B82F6,stroke-width:1.5px
 ```
-Row reconciliation: 3,603 = 3,269 + 334 + 0.
 
-Accepted records by contract:
-Contract	Accepted rows
-GOLDM	612
-GOLDGUINEA	879
-GOLDPETAL	901
-GOLDTEN	877
+**Reconciliation:** `3,603 = 3,269 + 334 + 0`
+
+### Accepted Records by Contract
+
+| Contract | Accepted Rows |
+|---|---:|
+| GOLDM | 612 |
+| GOLDGUINEA | 879 |
+| GOLDPETAL | 901 |
+| GOLDTEN | 877 |
+
+These figures describe the previously reported run. They should not replace a review of the source data or individual data-quality exceptions.
+
+## Backtesting Snapshot
+
+The following results were reported in an earlier backtest and have not been independently revalidated here.
+
+| Metric | Reported Result |
+|---|---:|
+| Trades | 42 |
+| Gross PnL | ₹5,031.00 |
+| Estimated transaction costs | ₹15,411.76 |
+| **Net PnL** | **−₹10,380.76** |
+| Net Sharpe ratio | −1.7888 |
+| Out-of-sample net PnL | −₹5,840.35 |
+| Out-of-sample Sharpe ratio | −3.5024 |
+
+### What the Results Show
+
+In the reported run, estimated transaction costs exceeded gross PnL, leaving the strategy with a net loss.
+
+This is an important result to keep visible: identifying a price difference is not the same as proving that a trade is profitable. Results depend on the strategy rules, data quality, and cost assumptions.
+
+## Supported Contracts
+
+SwarnaNet covers four MCX gold-contract categories:
+
+`GOLDM` · `GOLDGUINEA` · `GOLDPETAL` · `GOLDTEN`
+
+Contract specifications and quotation conventions can vary by contract and date. Verify contract size, purity, quotation units, and expiry rules against the applicable official MCX specifications before relying on quantitative comparisons.
 
 
-These counts describe the reported run; they are not a substitute for checking the source data or reviewing individual data-quality exceptions.
-Backtesting snapshot
-These results were also reported from an earlier run and have not been independently revalidated here.
-Metric	Reported result
-Trades	42
-Gross PnL	₹5,031.00
-Estimated transaction costs	₹15,411.76
-Net PnL	−₹10,380.76
-Net Sharpe ratio	−1.7888
-Out-of-sample net PnL	−₹5,840.35
-Out-of-sample Sharpe ratio	−3.5024
+## Technology Stack
 
+| Component | Technology |
+|---|---|
+| Ingestion and processing | Python |
+| Processed data and reports | CSV, Markdown |
+| Pipeline testing | pytest |
+| Frontend | Next.js, React, TypeScript |
+| Database integration | Supabase / PostgreSQL |
+| Frontend hosting | Vercel |
+| Backend hosting | Render |
 
-In this run, estimated transaction costs were higher than gross PnL, so the strategy ended with a loss after costs. That is an important result to keep visible: finding a price difference is not the same as proving a trade is profitable. Results depend on the strategy rules, data quality, and cost assumptions.
-Contracts covered
-GOLDM · GOLDGUINEA · GOLDPETAL · GOLDTEN
-
-Contract specifications and quotation conventions can vary by contract and date. Verify size, purity, units, and expiry rules against the applicable official MCX specifications before relying on a comparison.
-Technology
-Part	Technology
-Ingestion and processing	Python
-Processed data and reports	CSV, Markdown
-Pipeline tests	pytest
-Frontend	Next.js, React, TypeScript
-Database integration	Supabase / PostgreSQL
-Hosting	Vercel for the frontend; Render for the backend
+*Technology roles should be confirmed against the current repository and deployment configuration.*
 
 
 Check the repository configuration for exact dependencies and versions.
