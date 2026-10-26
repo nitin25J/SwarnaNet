@@ -1,24 +1,27 @@
 SwarnaNet
-MCX Gold Derivatives Intelligence & Cross-Contract Relative Value
+MCX Gold Derivatives Intelligence & Cross-Contract Analysis
 Hack in Hills ’26 · Problem Statement 03
-A price difference is not an opportunity until the numbers survive the costs.
 
-SwarnaNet is a quantitative research platform for analyzing historical MCX gold contracts, evaluating cross-contract relative-value signals, and testing strategies after estimated transaction costs.
+SwarnaNet is a project for exploring historical MCX gold-contract data and checking whether differences between contracts might represent a useful relative-value opportunity. The pipeline brings raw CSV files into a consistent format, while the analysis and backtesting work considers contract specifications and estimated trading costs.
 
-Open Frontend · Backend API
-The Challenge
-MCX gold contracts differ in size, purity, quotation conventions, and expiry. Raw prices cannot be compared blindly: apparent discrepancies may reflect contract differences, and trading costs can erase a theoretical edge.
-What SwarnaNet Does
-- Expiry-aware ingestion — standardizes historical MCX CSV data while preserving each row’s recorded expiry.
-- Data validation — maps source headers, parses dates, detects duplicates, and generates audit outputs.
-- Cross-contract analysis — prepares structured observations for contract-aware comparisons and opportunity evaluation.
-- Cost-aware backtesting — evaluates gross results against estimated transaction costs and net performance.
-- Analytics dashboard — presents supported market-data and quantitative outputs.
-System Architecture
+Open Frontend · Backend URL
+The problem
+MCX gold contracts can differ in size, purity, quotation units, and expiry. Comparing their raw prices without accounting for those differences can lead to misleading conclusions. Even a real price gap may not be worth trading once brokerage, taxes, exchange charges, and slippage are considered.
+
+SwarnaNet is being built to make these comparisons more structured and easier to check.
+What’s included
+- Historical CSV ingestion and schema normalization.
+- Trading-date and contract-expiry parsing, with expiry kept from each source row.
+- Duplicate detection and data-quality reports.
+- A normalized dataset for downstream analysis.
+- Cross-contract opportunity analysis and historical backtesting, based on the implemented strategy.
+- A web interface for viewing available data and analytical results.
+System architecture
 ```mermaid
-flowchart LR
+%%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
+flowchart TD
     A[MCX Gold CSV Archives] --> B[Python Ingestion Pipeline]
-    B --> C[Normalize & Validate]
+    B --> C[Normalize and Validate]
     C --> D[(Canonical Dataset)]
     C --> E[Audit Reports]
     D --> F[Quantitative Features]
@@ -28,14 +31,15 @@ flowchart LR
     I <--> J[(Supabase / PostgreSQL)]
     I <--> K[Frontend Dashboard]
 ```
-Architecture overview; confirm live service and database connectivity in the current deployment configuration.
-Data Pipeline
+This is a high-level view of the application flow. The deployed URLs are listed above; actual API and database connectivity should be checked against the current deployment and configuration.
+How the data pipeline works
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
 flowchart TD
-    A[CSV Archives] --> B[In-memory Read]
-    B --> C[Canonical Header Mapping]
-    C --> D[Trading & Expiry Date Parsing]
-    D --> E[Duplicate Detection]
+    A[MCX CSV Archives] --> B[Read ZIP and CSV Files]
+    B --> C[Map Source Headers]
+    C --> D[Parse Trading and Expiry Dates]
+    D --> E[Detect Duplicate Records]
     E --> F{Validation}
     F -->|Accepted| G[Sort by Symbol, ExpiryDate, Date]
     F -->|Rejected| H[Quarantine Log]
@@ -43,16 +47,17 @@ flowchart TD
     H --> J[Validation Reports]
     I --> J
 ```
-Pipeline Details
-- Uses Python standard-library utilities for ZIP/CSV processing.
-- Normalizes records to Symbol, Date, ExpiryDate, Open, High, Low, Close, Volume, and OpenInterest.
-- Uses Volume(Lots) and Open Interest(Lots) for their respective fields; avoids confusing volume with Volume(In 000’s).
-- Converts dates to ISO YYYY-MM-DD and preserves row-level expiry values instead of inferring expiry from filenames.
-- Deduplicates overlapping records and sorts accepted observations by contract and date.
-- Produces a normalized dataset, quarantine log, and validation/audit reports.
-Dataset Audit
-Previously reported ingestion run — rerun the pipeline to verify against the current checkout.
-Metric	Reported result
+The ingestion code uses Python standard-library utilities to read archive and CSV content in memory. It maps source fields to a nine-column schema:
+
+Symbol, Date, ExpiryDate, Open, High, Low, Close, Volume, OpenInterest
+
+A couple of details matter here:
+- Volume is read from Volume(Lots), and OpenInterest from Open Interest(Lots). The similarly named Volume(In 000’s) field is not used for volume.
+- Trading and expiry dates are converted to ISO YYYY-MM-DD format. The expiry recorded in each row is kept; it is not guessed from a filename.
+- Accepted records are sorted by symbol, expiry date, and trading date. Duplicate records are accounted for separately from accepted and quarantined rows.
+Dataset audit
+The following figures were reported for a previous ingestion run. Run the pipeline and inspect the reports to confirm them if the source files or code have changed.
+Measure	Reported result
 Source CSV files	43
 Raw source rows	3,603
 Accepted normalized rows	3,269
@@ -62,12 +67,15 @@ Ingestion tests	7 passed
 
 
 ```mermaid
-flowchart LR
-    A["3,603<br/>Source rows"] --> B["3,269<br/>Accepted"]
-    A --> C["334<br/>Duplicates"]
-    A --> D["0<br/>Quarantined"]
+%%{init: {"theme":"base","themeVariables":{"background":"#ffffff","primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#2563eb","secondaryColor":"#bfdbfe","secondaryTextColor":"#1e40af","secondaryBorderColor":"#3b82f6","tertiaryColor":"#eff6ff","tertiaryTextColor":"#1e3a8a","tertiaryBorderColor":"#60a5fa","edgeLabelBackground":"#eff6ff","clusterBkg":"#eff6ff","clusterBorder":"#2563eb"}}}%%
+flowchart TD
+    A[3,603 source rows] --> B[3,269 accepted]
+    A --> C[334 duplicates]
+    A --> D[0 quarantined]
 ```
-Reconciliation: 3,603 = 3,269 + 334 + 0
+Row reconciliation: 3,603 = 3,269 + 334 + 0.
+
+Accepted records by contract:
 Contract	Accepted rows
 GOLDM	612
 GOLDGUINEA	879
@@ -75,8 +83,9 @@ GOLDPETAL	901
 GOLDTEN	877
 
 
-Backtesting: Costs Matter
-Previously reported results; not independently revalidated in this README.
+These counts describe the reported run; they are not a substitute for checking the source data or reviewing individual data-quality exceptions.
+Backtesting snapshot
+These results were also reported from an earlier run and have not been independently revalidated here.
 Metric	Reported result
 Trades	42
 Gross PnL	₹5,031.00
@@ -87,35 +96,71 @@ Out-of-sample net PnL	−₹5,840.35
 Out-of-sample Sharpe ratio	−3.5024
 
 
-The reported strategy was friction-constrained: estimated transaction costs exceeded gross profit, producing negative net PnL. This is a useful validation result—not evidence of profitability. It highlights why a price discrepancy must be assessed against costs and assumptions before being treated as an opportunity.
-Supported Contracts
+In this run, estimated transaction costs were higher than gross PnL, so the strategy ended with a loss after costs. That is an important result to keep visible: finding a price difference is not the same as proving a trade is profitable. Results depend on the strategy rules, data quality, and cost assumptions.
+Contracts covered
 GOLDM · GOLDGUINEA · GOLDPETAL · GOLDTEN
 
-Contract specifications, quotation units, purity, and expiry rules should be verified against official MCX specifications before quantitative comparisons.
+Contract specifications and quotation conventions can vary by contract and date. Verify size, purity, units, and expiry rules against the applicable official MCX specifications before relying on a comparison.
 Technology
-Layer	Technologies
-Data pipeline & quantitative processing	Python
-Dataset & audit outputs	CSV, Markdown
-Testing	pytest
+Part	Technology
+Ingestion and processing	Python
+Processed data and reports	CSV, Markdown
+Pipeline tests	pytest
 Frontend	Next.js, React, TypeScript
 Database integration	Supabase / PostgreSQL
-Hosting	Vercel (frontend), Render (backend)
+Hosting	Vercel for the frontend; Render for the backend
 
 
-Technology and service roles should be checked against the current repository and deployment configuration.
-Run Locally
-1. Install dependencies using the project’s manifests and setup instructions.
-2. Configure required environment variables using the provided example file, if available. Never commit secrets.
-3. Run the ingestion pipeline:
-   python src/pipeline/ingest.py
-4. Run tests:
-   python -m pytest
-Previously reported outputs:
+Check the repository configuration for exact dependencies and versions.
+Project file structure
+SWARNANET/
+├── frontend/                         # Web application
+│   └── src/
+│       ├── app/                      # Pages and routes
+│       ├── components/               # Reusable interface components
+│       ├── hooks/                    # Shared React hooks
+│       ├── lib/                      # Utilities and client setup
+│       └── types/                    # TypeScript types
+├── dataset/                          # Source MCX data, grouped by contract
+│   ├── GOLDM/
+│   ├── GOLDGUINEA/
+│   ├── GOLDPETAL/
+│   └── GOLDTEN/
+├── src/
+│   └── pipeline/
+│       └── ingest.py                 # Ingestion and normalization
+├── data/
+│   └── processed/
+│       ├── mcx_gold_normalized.csv
+│       └── quarantine.csv
+├── reports/
+│   ├── ingestion_validation.md
+│   └── dataset_audit.md
+├── tests/
+│   └── test_ingestion.py
+├── .env.example                      # Example environment settings, if present
+└── README.md
+This is a guide to the main project areas and reported output files. Folder names can differ between local copies, so use the current repository as the source of truth.
+Run locally
+From the project root, install dependencies using the project’s setup files, then run the pipeline and tests:
+python src/pipeline/ingest.py
+python -m pytest
+These commands were used in the reported ingestion workflow. Confirm that the paths and required dependencies match your current checkout. Set local environment variables from the provided example configuration, if available, and do not commit real credentials.
+
+Expected pipeline outputs from the reported run:
 - data/processed/mcx_gold_normalized.csv
 - data/processed/quarantine.csv
 - reports/ingestion_validation.md
 - reports/dataset_audit.md
-Confirm these paths and commands against the current checkout.
-Responsible Use
-SwarnaNet is an educational and quantitative research prototype—not a guarantee of arbitrage or profit, and not financial advice. Historical results do not predict future performance. Data quality, contract specifications, liquidity, slippage, transaction costs, and execution assumptions can materially change outcomes.
-SwarnaNet · Analyze the relationship. Validate the opportunity. Respect the costs.
+Future work
+There are several practical areas to improve next:
+- Finish the login system: Add Supabase sign-up, login, logout, password reset, and session handling. Protect private pages and configure Row Level Security policies before storing user-specific data.
+- Add more market history: Bring in more years of reliable MCX data and keep source details with each import. If machine-learning models are added or used in the analysis, retrain and evaluate them on the expanded data rather than assuming more rows automatically improve results.
+- Make ingestion more robust: Support incremental imports, detect changed CSV headers, make reruns safe, and add clearer error logs and row-level reconciliation.
+- Improve data checks: Flag missing prices, unusual volume or open-interest changes, and inconsistent records for review.
+- Test strategy assumptions more thoroughly: Review transaction fees and slippage, run sensitivity checks, and expand walk-forward and out-of-sample testing.
+- Polish the dashboard: Show when data was last refreshed, provide useful exports, and make contract and expiry comparisons easier to inspect.
+- Add end-to-end checks: Test the pipeline, API, database permissions, refresh process, and frontend together—not just as separate parts.
+These are planned improvements, not statements that the features are already complete.
+Note on use
+SwarnaNet is a research and demonstration project, not a trading recommendation. Historical backtests do not predict future results, and the reported strategy results above were negative after estimated costs. Any real trading decision would need independent checks of the data, contract terms, liquidity, execution assumptions, and costs.
