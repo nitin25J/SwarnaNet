@@ -1,7 +1,7 @@
                                                                      
 # SwarnaNet
 
-### MCX Gold Derivatives Intelligence & Cross-Contract Analysis
+### MCX Gold Derivatives Intelligence & Cross-Contract Analysis.
 
 **Hack in Hills ’26 · Problem Statement 03**
 
