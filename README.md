@@ -11,7 +11,7 @@ SwarnaNet is a project for exploring historical MCX gold-contract data and check
 
 ## The Problem
 
-MCX gold contracts can differ in size, purity, quotation units, and expiry. Comparing their raw prices without accounting for these differences can lead to misleading conclusions. Even a real price gap may not be worth trading once brokerage, taxes, exchange charges, and slippage are considered.
+MCX gold contracts can differ in size, purity quotation units, and expiry. Comparing their raw prices without accounting for these differences can lead to misleading conclusions. Even a real price gap may not be worth trading once brokerage, taxes, exchange charges, and slippage are considered.
 
 ## What's Included
 
